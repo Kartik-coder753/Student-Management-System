@@ -1,0 +1,5 @@
+{
+  "name": "Student Management System",
+  "description": "A comprehensive database-driven student management system built with React, Express, and Firebase following MVC architecture.",
+  "requestFramePermissions": []
+}

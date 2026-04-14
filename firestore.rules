@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: students
+    // Document ID: {studentId}
+    // Fields:
+    //   - name: string (required)
+    //   - email: string (required, email format)
+    //   - rollNumber: string (required)
+    //   - course: string (required)
+    //   - age: number (required, positive)
+    //   - status: string (required, enum: Active, Inactive, Graduated)
+    //   - createdAt: timestamp (required)
+    //   - updatedAt: timestamp (required)
+    //   - createdBy: string (required, UID)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.createdBy;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidStudent(data) {
+      return data.keys().hasAll(['name', 'email', 'rollNumber', 'course', 'age', 'status', 'createdAt', 'updatedAt', 'createdBy']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             isValidEmail(data.email) &&
+             data.rollNumber is string && data.rollNumber.size() > 0 &&
+             data.course is string && data.course.size() > 0 &&
+             data.age is number && data.age > 0 && data.age < 150 &&
+             data.status in ['Active', 'Inactive', 'Graduated'] &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp &&
+             data.createdBy is string && data.createdBy == request.auth.uid;
+    }
+
+    match /students/{studentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidStudent(request.resource.data);
+      allow update: if isAuthenticated() && isValidStudent(request.resource.data) && 
+                    (isDocOwner() || request.resource.data.createdBy == resource.data.createdBy);
+      allow delete: if isAuthenticated() && isDocOwner();
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+  }
+}
