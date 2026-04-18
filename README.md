@@ -1,10 +1,7 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
-More Updates Coming Soon !!!...
-
 Student Management System
-A comprehensive database-driven student management system built with React, Express, and Firebase following MVC architecture. This app is designed to run on Google AI Studio but can also be deployed independently.
+A comprehensive database-driven student management system built with React, Express, and Firebase following MVC architecture. This app is designed to run on Google AI Studio but can also be deployed independently
+
+More Updates Coming Soon !!!...
 
 Overview
 This application allows administrators to manage student records, including creating, reading, updating, and deleting student information. It integrates with Firebase Firestore for data persistence and uses Gemini AI for intelligent features (optional). The frontend is built with React, Tailwind CSS, and shadcn/ui components, while the backend uses Express to serve the application and provide a simple API health check.
